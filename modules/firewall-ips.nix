@@ -24,6 +24,5 @@ in
     networking.firewall.extraCommands = (mkIf (!config.networking.nftables.enable)
       (concatMapStringsSep "\n" (ip: "ip6tables -A INPUT -s ${ip} -j ACCEPT") (cfg.ips))
     );
-  ];
  };
 }
