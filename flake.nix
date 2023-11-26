@@ -5,6 +5,7 @@
 
     nixosModules = {
       yggdrasil = import ./modules/yggdrasil.nix;
+      firewall-ips = import ./modules/firewall-ips.nix;
     };
 
   };
