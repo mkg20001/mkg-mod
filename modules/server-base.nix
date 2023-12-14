@@ -10,6 +10,8 @@ in
     mkg.mod.server-base = {
       enable = mkEnableOption "server base configuration";
 
+      gc = mkEnableOption "automatic gc";
+
       autoUpgrade = mkEnableOption "automatically upgrade using nixpkgs channels";
     };
   };
@@ -30,7 +32,18 @@ in
     networking.useNetworkd = true;
     boot.initrd.systemd.enable = true;
     networking.nftables.enable = true;
-    nix.settings.experimental-features = "nix-command flakes";
+
+    # nix
+    nix = {
+      gc.automatic = cfg.gc;
+      optimise.automatic = true;
+      settings = {
+        trusted-users = [ "root" "@wheel" ];
+        auto-optimise-store = true;
+        experimental-features = "nix-command flakes";
+      };
+    };
+
 
     # security
     services.openssh = {
