@@ -30,6 +30,7 @@ in
     networking.useNetworkd = true;
     boot.initrd.systemd.enable = true;
     networking.nftables.enable = true;
+    nix.settings.experimental-features = "nix-command flakes";
 
     # security
     services.openssh = {
