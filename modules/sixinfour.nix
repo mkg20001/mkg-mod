@@ -102,6 +102,7 @@ in
 
     networking.firewall.extraForwardRules = ''
       iifname "tun*" ip6 saddr ${cfg.settings.IPV6_NETWORK}/${toString cfg.settings.IPV6_CIDR} oifname "${cfg.settings.INTERFACE}" accept
+      iifname "tun*" ip6 saddr ${cfg.settings.IPV6_NETWORK}/${toString cfg.settings.IPV6_CIDR} ip6 daddr ${cfg.settings.IPV6_NETWORK}/${toString cfg.settings.IPV6_CIDR} oifname "tun*" accept
       iifname "${cfg.settings.INTERFACE}" ip6 daddr ${cfg.settings.IPV6_NETWORK}/${toString cfg.settings.IPV6_CIDR} oifname "tun*" accept
     '';
 
