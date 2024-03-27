@@ -1,0 +1,82 @@
+#!/usr/bin/env ysh
+
+export PATH="@path@"
+
+var STATE_DIR={STATE_DIRECTORY}
+const STATE="$[STATE_DIR.STATE_DIRECTORY]/state.json"
+const NOW=int("$(date +%s)")
+const YESTERDAY=NOW - (24 * 60 * 60)
+
+var state
+
+if ! test -e "$STATE" {
+  setvar state={}
+} else {
+  cat "$STATE" | json read (&state)
+}
+
+var handshakes=split("$(wg show jit6 latest-handshakes)")
+var allowedips=split("$(wg show jit6 allowed-ips)")
+
+var peers={}
+var peer
+
+for i, v in (handshakes) {
+    if (i % 2 === 0) {
+      setvar peer = "$v"
+    } else {
+      setvar peers["$peer"] = { lastHS: v }
+    }
+}
+
+for i, v in (allowedips) {
+    if (i % 2 === 0) {
+      setvar peer = "$v"
+    } else {
+      setvar peers["$peer"].ip = "$v"
+    }
+}
+
+func hayneedle(hay, needle) {
+  for i, k, v in (hay) {
+    if (k === needle) {
+      return (true)
+    }
+  }
+
+  return (false)
+}
+
+for i, k, v in (peers) {
+  if (hayneedle(state, k)) {
+    var c = state["$k"]
+    if (c.lastHS !== v.lastHS) {
+      setvar state["$k"].lastSeen = NOW
+      setvar state["$k"].lastHS = c.lastHS
+    }
+    if (state["$k"].lastSeen <= YESTERDAY) {
+      echo "delete $k"
+      var ip=v.ip
+      wg set jit6 peer "$k" remove
+      ip route delete "$ip" dev "jit6" table "main"
+      setvar state["$k"] = null
+    }
+  } else {
+    echo "track $k"
+    setvar state["$k"] = v
+    setvar state["$k"].lastSeen = NOW
+  }
+}
+
+for i, k, v in (state) {
+  if (v !== null) {
+    if (not hayneedle(peers, k)) {
+      echo "reinstate $k"
+      var ip=v.ip
+      wg set jit6 peer "$k" allowed-ips "$ip"
+      ip route replace "$ip" dev jit6 table main
+    }
+  }
+}
+
+json write (state) > "$STATE"
