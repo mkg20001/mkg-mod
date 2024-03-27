@@ -70,7 +70,7 @@ in
     security.sudo.extraRules = [ {
       users = [ "jit6" ];
       commands = [
-        { command = "${jit6sh}"; options = [ "NOPASSWD" ]; }
+        { command = "${pkg.sh}"; options = [ "NOPASSWD" ]; }
       ];
     } ];
 
@@ -112,7 +112,7 @@ in
       startAt = "*-*-* 0/1:00:00";
       serviceConfig = {
         Type = "oneshot";
-        ExecStart = jit6gc;
+        ExecStart = pkg.gc;
         StateDirectory = "jit6";
       };
       wantedBy = [ "multi-user.target" ];
