@@ -36,6 +36,8 @@ in
     # nix
     nix = {
       gc.automatic = cfg.gc;
+      gc.options = "--delete-older-than 14d";
+
       optimise.automatic = true;
       settings = {
         trusted-users = [ "root" "@wheel" ];
