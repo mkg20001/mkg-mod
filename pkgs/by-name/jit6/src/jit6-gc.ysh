@@ -1,5 +1,7 @@
 #!/usr/bin/env ysh
 
+shopt --unset no_exported
+
 export PATH="@path@"
 
 var STATE_DIR={STATE_DIRECTORY}
