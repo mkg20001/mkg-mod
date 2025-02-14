@@ -1,10 +1,8 @@
 #!/usr/bin/env ysh
 
-shopt --unset no_exported
+setglobal ENV.PATH = "@path@"
 
-export PATH="@path@"
-
-var STATE_DIR={STATE_DIRECTORY}
+var STATE_DIR={ENV.STATE_DIRECTORY}
 const STATE="$[STATE_DIR.STATE_DIRECTORY]/state.json"
 const NOW=int("$(date +%s)")
 const YESTERDAY=NOW - (24 * 60 * 60)
